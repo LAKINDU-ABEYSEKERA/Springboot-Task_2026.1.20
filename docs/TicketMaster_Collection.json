@@ -1,0 +1,105 @@
+{
+  "info": {
+    "_postman_id": "b3e34c1a-2b1e-4c1a-8b1e-ticketmaster",
+    "name": "TicketMaster Core Tests",
+    "description": "Test collection for TicketMaster Core backend including Locking, Pricing, and Audit scenarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Hold Seat (Success)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": 1,\n    \"seatId\": 1,\n    \"eventId\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/seats/1/hold",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "seats",
+            "1",
+            "hold"
+          ]
+        },
+        "description": "Successfully holds a seat for 10 minutes."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Hold Seat (Audit Failure Test)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userId\": 1,\n    \"seatId\": 999,\n    \"eventId\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/seats/999/hold",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "seats",
+            "999",
+            "hold"
+          ]
+        },
+        "description": "Intentionally fails to trigger the Audit Shadow log."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Calculate VIP Price",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/pricing/calculate?userId=1&eventId=1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pricing",
+            "calculate"
+          ],
+          "query": [
+            {
+              "key": "userId",
+              "value": "1"
+            },
+            {
+              "key": "eventId",
+              "value": "1"
+            }
+          ]
+        },
+        "description": "Calculates dynamic pricing based on User Tier and Event Demand."
+      },
+      "response": []
+    }
+  ]
+}
