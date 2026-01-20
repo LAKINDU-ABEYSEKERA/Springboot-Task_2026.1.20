@@ -15,6 +15,6 @@ public class Event {
 
     private String name;
     private BigDecimal basePrice;
-    private boolean isHighDemand; // Required for VIP logic
+    private boolean isHighDemand;
     private LocalDate eventDate;
 }

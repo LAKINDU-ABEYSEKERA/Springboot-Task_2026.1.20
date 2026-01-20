@@ -13,9 +13,10 @@ public class SeatController {
 
     private final SeatService seatService;
 
-    // Endpoint: POST /seats/{id}/hold
+
     @PostMapping("/{id}/hold")
     public ResponseEntity<String> holdSeat(@PathVariable Long id, @RequestBody BookingRequest request) {
+
         seatService.holdSeat(id, request.getUserId());
         return ResponseEntity.ok("Seat held successfully for 10 minutes.");
     }

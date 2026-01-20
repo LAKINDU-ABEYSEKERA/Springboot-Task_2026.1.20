@@ -16,7 +16,7 @@ public class PricingController {
 
     private final PriceCalculatorService priceCalculatorService;
 
-    // Endpoint: GET /pricing/calculate?userId=1&eventId=1
+
     @GetMapping("/calculate")
     public ResponseEntity<PricingResponse> calculate(@RequestParam Long userId, @RequestParam Long eventId) {
         PricingResponse response = priceCalculatorService.calculatePrice(userId, eventId);

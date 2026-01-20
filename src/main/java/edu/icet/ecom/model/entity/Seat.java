@@ -27,6 +27,6 @@ public class Seat {
 
     private LocalDateTime holdExpiry;
 
-    @Version // Optimistic Locking
+    @Version
     private Integer version;
 }

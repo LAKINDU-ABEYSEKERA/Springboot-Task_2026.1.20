@@ -1,6 +1,7 @@
 package edu.icet.ecom.service.impl;
 
-import edu.icet.ecom.aop.AuditFailure; // We will create this in Phase 5
+import edu.icet.ecom.aop.AuditFailure;
+import edu.icet.ecom.exception.SeatLockedException;
 import edu.icet.ecom.model.entity.Seat;
 import edu.icet.ecom.model.enums.SeatStatus;
 import edu.icet.ecom.repository.SeatRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -19,29 +21,38 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     @Transactional
-    @AuditFailure // Hooks into AOP
+    @AuditFailure
     public void holdSeat(Long seatId, Long userId) {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new RuntimeException("Seat not found"));
 
+        // Logic 1: Seat is Available
         if (seat.getStatus() == SeatStatus.AVAILABLE) {
             lockSeat(seat, userId);
-        } else if (seat.getStatus() == SeatStatus.HELD) {
-            // Check if expired [cite: 19]
+        }
+        // Logic 2: Seat is already Held (The fix goes here)
+        else if (seat.getStatus() == SeatStatus.HELD) {
             if (seat.getHoldExpiry().isBefore(LocalDateTime.now())) {
+                // Expired -> Overwrite it
                 lockSeat(seat, userId);
             } else {
-                throw new RuntimeException("Seat is currently locked by another user.");
+                // Active -> Throw Custom Exception
+                long secondsLeft = ChronoUnit.SECONDS.between(
+                        LocalDateTime.now(), seat.getHoldExpiry()
+                );
+                throw new SeatLockedException("Seat locked. Seconds remaining: " + secondsLeft);
             }
-        } else {
-            throw new RuntimeException("Seat is already SOLD.");
+        }
+        // Logic 3: Seat is Sold
+        else {
+            throw new RuntimeException("Seat is permanently SOLD");
         }
     }
 
     private void lockSeat(Seat seat, Long userId) {
         seat.setStatus(SeatStatus.HELD);
         seat.setHeldByUserId(userId);
-        seat.setHoldExpiry(LocalDateTime.now().plusMinutes(10)); // [cite: 17]
+        seat.setHoldExpiry(LocalDateTime.now().plusMinutes(10));
         seatRepository.save(seat);
     }
 }

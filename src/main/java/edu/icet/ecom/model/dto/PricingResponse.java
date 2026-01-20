@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PricingResponse {
     private BigDecimal finalPrice;
-    private String breakdown; // e.g., "VIP Discount Applied"
+    private String breakdown;
 }

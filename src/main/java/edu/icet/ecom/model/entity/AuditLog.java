@@ -16,7 +16,7 @@ public class AuditLog {
     private Long id;
 
     private String action;
-    private Long userId; // Nullable if user is unknown
+    private Long userId;
     private String details;
     private LocalDateTime timestamp;
 }

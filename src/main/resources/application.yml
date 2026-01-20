@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update # changed to update to preserve data during dev
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
