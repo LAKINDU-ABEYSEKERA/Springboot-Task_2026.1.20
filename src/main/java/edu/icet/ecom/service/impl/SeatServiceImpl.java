@@ -26,24 +26,24 @@ public class SeatServiceImpl implements SeatService {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new RuntimeException("Seat not found"));
 
-        // Logic 1: Seat is Available
+
         if (seat.getStatus() == SeatStatus.AVAILABLE) {
             lockSeat(seat, userId);
         }
-        // Logic 2: Seat is already Held (The fix goes here)
+
         else if (seat.getStatus() == SeatStatus.HELD) {
             if (seat.getHoldExpiry().isBefore(LocalDateTime.now())) {
-                // Expired -> Overwrite it
+
                 lockSeat(seat, userId);
             } else {
-                // Active -> Throw Custom Exception
+
                 long secondsLeft = ChronoUnit.SECONDS.between(
                         LocalDateTime.now(), seat.getHoldExpiry()
                 );
                 throw new SeatLockedException("Seat locked. Seconds remaining: " + secondsLeft);
             }
         }
-        // Logic 3: Seat is Sold
+
         else {
             throw new RuntimeException("Seat is permanently SOLD");
         }
